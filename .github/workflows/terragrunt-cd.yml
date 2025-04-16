@@ -75,6 +75,12 @@ jobs:
         env:
           TERRAGRUNT_GITHUB_TOKEN: ${{ secrets.TERRAGRUNT_GITHUB_TOKEN }}
 
+      - name: Delete existing artifact
+        run: |
+          gh api \
+            -X DELETE \
+            /repos/${{ github.repository }}/actions/artifacts/${{ github.run_id }}
+
       - name: Upload Terraform State (if local backend)
         if: ${{ inputs.use-local-backend }}
         uses: actions/upload-artifact@v4
