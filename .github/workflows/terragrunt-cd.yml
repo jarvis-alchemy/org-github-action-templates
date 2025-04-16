@@ -12,6 +12,10 @@ on:
         required: false
         type: string
         default: '1.6.2'
+      use-local-backend:
+        required: false
+        type: boolean
+        default: false
     secrets:
       TERRAGRUNT_GITHUB_TOKEN:
         required: false
@@ -43,6 +47,13 @@ jobs:
       #     gcloud auth activate-service-account --key-file=gcp-key.json
       #     rm -f gcp-key.json
 
+      - name: Download Terraform State (if local backend)
+        if: ${{ inputs.use-local-backend }}
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-state
+          path: ${{ inputs.working-directory }}/terraform.tfstate
+
       - name: Terragrunt Init
         run: |
           cd ${{ inputs.working-directory }}
@@ -63,3 +74,10 @@ jobs:
           terragrunt apply -auto-approve
         env:
           TERRAGRUNT_GITHUB_TOKEN: ${{ secrets.TERRAGRUNT_GITHUB_TOKEN }}
+
+      - name: Upload Terraform State (if local backend)
+        if: ${{ inputs.use-local-backend }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-state
+          path: ${{ inputs.working-directory }}/terraform.tfstate

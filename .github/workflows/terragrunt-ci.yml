@@ -11,7 +11,11 @@ on:
         description: 'Version of Terraform to use'
         required: false
         type: string
-        default: '1.6.0'
+        default: '1.6.2'
+      use-local-backend:
+        required: false
+        type: boolean
+        default: false
     secrets:
       TERRAGRUNT_GITHUB_TOKEN:
         required: false
@@ -39,6 +43,13 @@ jobs:
         run: |
           cd ${{ inputs.working-directory }}
           terragrunt hclfmt
+
+      - name: Download Terraform State (if local backend)
+        if: ${{ inputs.use-local-backend }}
+        uses: actions/download-artifact@v3
+        with:
+          name: terraform-state
+          path: ${{ inputs.working-directory }}/terraform.tfstate
 
       - name: Terragrunt Init
         run: |
@@ -70,4 +81,11 @@ jobs:
       #   continue-on-error: true
       #   env:
       #     TF_VAR_environment: ${{ inputs.environment }}
+
+      - name: Upload Terraform State (if local backend)
+        if: ${{ inputs.use-local-backend }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-state
+          path: ${{ inputs.working-directory }}/terraform.tfstate
 
