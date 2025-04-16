@@ -52,7 +52,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: terraform-state
-          path: ${{ inputs.working-directory }}/terraform.tfstate
+          path: ${{ inputs.working-directory }}/
 
       - name: Terragrunt Init
         run: |
