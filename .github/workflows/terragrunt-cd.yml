@@ -80,6 +80,8 @@ jobs:
           gh api \
             -X DELETE \
             /repos/${{ github.repository }}/actions/artifacts/${{ github.run_id }}
+        env:
+          GH_TOKEN: ${{ secrets.TERRAGRUNT_GITHUB_TOKEN }}
 
       - name: Upload Terraform State (if local backend)
         if: ${{ inputs.use-local-backend }}
